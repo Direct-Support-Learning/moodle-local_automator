@@ -87,31 +87,49 @@ class dspjob extends condition_base {
     }
 
     /**
-     * Get available DSP job options from the dsp_job custom field configdata.
+     * Get available DSP job options from the dsp_job customfield_field configdata.
+     *
+     * Uses local_dsp_credit_manager\job_helper when available, otherwise reads
+     * directly from mdl_customfield_field (newline-delimited JSON options string).
      *
      * @return array shortname => label
      */
     public static function get_job_options(): array {
         global $DB;
 
-        $field = $DB->get_record('user_info_field', ['shortname' => 'dsp_job'], 'configdata');
+        // Prefer the canonical job_helper if installed.
+        if (class_exists('\local_dsp_credit_manager\job_helper')) {
+            $shortnames = \local_dsp_credit_manager\job_helper::get_job_shortnames();
+            $options = [];
+            foreach ($shortnames as $shortname) {
+                $label = preg_replace('/^dsp_job_/', '', $shortname);
+                $label = ucwords(str_replace('_', ' ', $label));
+                $options[$shortname] = $label;
+            }
+            return $options;
+        }
+
+        // Fallback: read from customfield_field directly.
+        $field = $DB->get_record('customfield_field', ['shortname' => 'dsp_job'], 'configdata');
         if (!$field || empty($field->configdata)) {
             return [];
         }
 
-        $config = unserialize($field->configdata);
-        if (!isset($config['options']) || !is_array($config['options'])) {
+        $config = json_decode($field->configdata, true);
+        $raw    = $config['options'] ?? '';
+        if (trim($raw) === '') {
             return [];
         }
 
         $options = [];
-        foreach ($config['options'] as $option) {
-            $shortname = trim($option);
+        foreach (explode("\n", str_replace("\r\n", "\n", $raw)) as $line) {
+            $shortname = trim($line);
             if ($shortname !== '') {
-                $options[$shortname] = $shortname;
+                $label = preg_replace('/^dsp_job_/', '', $shortname);
+                $label = ucwords(str_replace('_', ' ', $label));
+                $options[$shortname] = $label;
             }
         }
-
         return $options;
     }
 }

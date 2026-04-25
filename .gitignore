@@ -1,2 +1,2 @@
 .claude/
-amd/build/
+# amd/build/ is committed — no grunt CI in this repo
