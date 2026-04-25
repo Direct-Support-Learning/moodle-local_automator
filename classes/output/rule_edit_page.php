@@ -132,20 +132,24 @@ class rule_edit_page implements \renderable, \templatable {
             ];
         }
 
+        $isnewrule = empty($this->rule->id);
+
         return [
-            'ruleid'           => $this->rule->id,
-            'conditions'       => $condrows,
-            'hasconditions'    => !empty($condrows),
-            'actions'          => $actionrows,
-            'hasactions'       => !empty($actionrows),
-            'conditiontypes'   => $condtypes,
-            'actiontypes'      => $actiontypes,
-            'selectcondlabel'  => get_string('selectconditiontype', 'local_automator'),
+            'ruleid'            => $this->rule->id,
+            'isnewrule'         => $isnewrule,
+            'conditions'        => $condrows,
+            'hasconditions'     => !empty($condrows),
+            'actions'           => $actionrows,
+            'hasactions'        => !empty($actionrows),
+            'conditiontypes'    => $condtypes,
+            'actiontypes'       => $actiontypes,
+            'selectcondlabel'   => get_string('selectconditiontype', 'local_automator'),
             'selectactionlabel' => get_string('selectactiontype', 'local_automator'),
-            'noconditionsmsg'  => get_string('noconditions', 'local_automator'),
-            'noactionsmsg'     => get_string('noactions', 'local_automator'),
-            'conditionslabel'  => get_string('conditions_section', 'local_automator'),
-            'actionslabel'     => get_string('actions_section', 'local_automator'),
+            'noconditionsmsg'   => get_string('noconditions', 'local_automator'),
+            'noactionsmsg'      => get_string('noactions', 'local_automator'),
+            'conditionslabel'   => get_string('conditions_section', 'local_automator'),
+            'actionslabel'      => get_string('actions_section', 'local_automator'),
+            'saverulefirstmsg'  => get_string('saverulefirst', 'local_automator'),
         ];
     }
 }

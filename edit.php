@@ -144,24 +144,17 @@ if ($form->is_cancelled()) {
     );
 }
 
+$conditions = $id ? array_values($DB->get_records(
+    'local_automator_conditions', ['ruleid' => $id], 'sortorder ASC'
+)) : [];
+$actions = $id ? array_values($DB->get_records(
+    'local_automator_actions', ['ruleid' => $id], 'sortorder ASC'
+)) : [];
+
+$renderable = new rule_edit_page($rule, $conditions, $actions);
+$renderer   = $PAGE->get_renderer('local_automator');
+
 echo $OUTPUT->header();
 $form->display();
-
-if ($id) {
-    $conditions = array_values($DB->get_records(
-        'local_automator_conditions',
-        ['ruleid' => $id],
-        'sortorder ASC'
-    ));
-    $actions = array_values($DB->get_records(
-        'local_automator_actions',
-        ['ruleid' => $id],
-        'sortorder ASC'
-    ));
-
-    $renderable = new rule_edit_page($rule, $conditions, $actions);
-    $renderer   = $PAGE->get_renderer('local_automator');
-    echo $renderer->render_rule_edit_page($renderable);
-}
-
+echo $renderer->render_rule_edit_page($renderable);
 echo $OUTPUT->footer();

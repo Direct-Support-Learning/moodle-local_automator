@@ -107,6 +107,7 @@ $string['rule_edit'] = 'Edit rule';
 $string['rule_new'] = 'New rule';
 $string['rulename'] = 'Rule name';
 $string['rules'] = 'Rules';
+$string['saverulefirst'] = 'Save the rule above first to start adding conditions and actions.';
 $string['rules_heading'] = 'Automation rules';
 $string['scope'] = 'Scope';
 $string['scope_sitewide'] = 'Site-wide';
