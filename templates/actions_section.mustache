@@ -1,0 +1,49 @@
+{{!
+    Actions section partial for the rule edit page.
+
+    @package   local_automator
+    @copyright 2026 DSL
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="local-automator-actions mb-4">
+    <h4>{{actionslabel}}</h4>
+
+    {{#hasactions}}
+    <table class="table table-sm generaltable">
+        <thead>
+            <tr>
+                <th>{{#str}}action_type, local_automator{{/str}}</th>
+                <th>{{#str}}description, local_automator{{/str}}</th>
+                <th>{{#str}}actions, local_automator{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#actions}}
+            <tr>
+                <td>{{type}}</td>
+                <td>{{summary}}</td>
+                <td>
+                    <a href="{{editurl}}" class="btn btn-sm btn-secondary">{{#str}}action_edit, local_automator{{/str}}</a>
+                    <a href="{{deleteurl}}"
+                       class="btn btn-sm btn-danger local-automator-confirm-delete"
+                       data-confirm="{{#str}}confirmdelete, local_automator{{/str}}">{{#str}}action_delete, local_automator{{/str}}</a>
+                </td>
+            </tr>
+            {{/actions}}
+        </tbody>
+    </table>
+    {{/hasactions}}
+
+    {{^hasactions}}
+    <p class="text-muted small">{{noactionsmsg}}</p>
+    {{/hasactions}}
+
+    <div class="local-automator-add-action mt-2" data-region="add-action">
+        <select class="custom-select" id="local-automator-add-action-select" data-action="add-action">
+            <option value="">{{selectactionlabel}}</option>
+            {{#actiontypes}}
+            <option value="{{url}}">{{name}}</option>
+            {{/actiontypes}}
+        </select>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+{{!
+    Logs list template.
+
+    @package   local_automator
+    @copyright 2026 DSL
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="local-automator-logs">
+    {{#haslogs}}
+    <table class="table table-striped generaltable">
+        <thead>
+            <tr>
+                <th>{{#str}}rulename, local_automator{{/str}}</th>
+                <th>{{#str}}scope, local_automator{{/str}}</th>
+                <th>{{#str}}user, local_automator{{/str}}</th>
+                <th>{{#str}}status, local_automator{{/str}}</th>
+                <th>{{#str}}message, local_automator{{/str}}</th>
+                <th>{{#str}}timestamp, local_automator{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#logs}}
+            <tr>
+                <td>{{rulename}}</td>
+                <td>{{scope}}</td>
+                <td>{{username}}</td>
+                <td>
+                    {{#issuccess}}
+                        <span class="badge badge-success">{{status}}</span>
+                    {{/issuccess}}
+                    {{^issuccess}}
+                        <span class="badge badge-danger">{{status}}</span>
+                    {{/issuccess}}
+                </td>
+                <td>{{message}}</td>
+                <td>{{timecreated}}</td>
+            </tr>
+            {{/logs}}
+        </tbody>
+    </table>
+    {{/haslogs}}
+
+    {{^haslogs}}
+    <p class="text-muted">{{nologsmsg}}</p>
+    {{/haslogs}}
+</div>

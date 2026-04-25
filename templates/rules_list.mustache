@@ -1,0 +1,53 @@
+{{!
+    Rules list page template.
+
+    @package   local_automator
+    @copyright 2026 DSL
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="local-automator-rules">
+    <div class="mb-3">
+        <a href="{{addnewurl}}" class="btn btn-primary">{{addnewlabel}}</a>
+    </div>
+
+    {{#hasrules}}
+    <table class="table table-striped generaltable">
+        <thead>
+            <tr>
+                <th>{{#str}}name, local_automator{{/str}}</th>
+                {{#issiteadmin}}<th>{{#str}}scope, local_automator{{/str}}</th>{{/issiteadmin}}
+                <th>{{#str}}operator, local_automator{{/str}}</th>
+                <th>{{#str}}enabled, local_automator{{/str}}</th>
+                <th>{{#str}}actions, local_automator{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#rules}}
+            <tr>
+                <td>{{name}}</td>
+                {{#issiteadmin}}<td>{{scope}}</td>{{/issiteadmin}}
+                <td>{{operator}}</td>
+                <td>
+                    {{#enabled}}
+                        <span class="badge badge-success">{{#str}}enabled, local_automator{{/str}}</span>
+                    {{/enabled}}
+                    {{^enabled}}
+                        <span class="badge badge-secondary">{{#str}}enabled, local_automator{{/str}}</span>
+                    {{/enabled}}
+                </td>
+                <td>
+                    <a href="{{editurl}}" class="btn btn-sm btn-secondary">{{#str}}rule_edit, local_automator{{/str}}</a>
+                    <a href="{{deleteurl}}"
+                       class="btn btn-sm btn-danger local-automator-delete-rule"
+                       data-confirm="{{confirmdelete}}">{{#str}}action_delete, local_automator{{/str}}</a>
+                </td>
+            </tr>
+            {{/rules}}
+        </tbody>
+    </table>
+    {{/hasrules}}
+
+    {{^hasrules}}
+    <p class="text-muted">{{norulesmsg}}</p>
+    {{/hasrules}}
+</div>
