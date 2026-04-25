@@ -119,9 +119,10 @@ if ($form->is_cancelled()) {
         $data->tenantid = tenant_helper::get_current_tenantid();
     } else {
         // Site admin: empty string means site-wide (NULL).
-        $data->tenantid = ($data->tenantid === '' || $data->tenantid === '0' || !$data->tenantid)
+        $rawtenantid = $data->tenantid ?? '';
+        $data->tenantid = ($rawtenantid === '' || $rawtenantid === '0' || !$rawtenantid)
             ? null
-            : (int) $data->tenantid;
+            : (int) $rawtenantid;
     }
 
     $data->timemodified = time();

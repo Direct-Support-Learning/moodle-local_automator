@@ -28,17 +28,32 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Resolves MuTMS tenant information for users.
+ *
+ * All methods degrade gracefully when tool_mutenancy is not installed,
+ * returning null / empty values so the plugin works in non-MuTMS environments.
  */
 class tenant_helper {
 
     /**
+     * Whether tool_mutenancy is installed and its tenancy class is available.
+     *
+     * @return bool
+     */
+    public static function is_mutenancy_available(): bool {
+        return class_exists('\tool_mutenancy\local\tenancy');
+    }
+
+    /**
      * Get the tenant ID for the current session user.
      *
-     * Returns null for site admins and untenanted users.
+     * Returns null for site admins, untenanted users, and non-MuTMS installs.
      *
      * @return int|null
      */
     public static function get_current_tenantid(): ?int {
+        if (!self::is_mutenancy_available()) {
+            return null;
+        }
         return \tool_mutenancy\local\tenancy::get_current_tenantid();
     }
 
@@ -50,6 +65,10 @@ class tenant_helper {
      */
     public static function get_user_tenantid(int $userid): ?int {
         global $DB;
+
+        if (!self::is_mutenancy_available()) {
+            return null;
+        }
 
         $cache = \cache::make('local_automator', 'usertenants');
         $cached = $cache->get('user_' . $userid);
@@ -76,12 +95,12 @@ class tenant_helper {
      * Get the tenant name by ID.
      *
      * @param int|null $tenantid
-     * @return string Empty string if no tenant.
+     * @return string Empty string if no tenant or MuTMS not installed.
      */
     public static function get_tenant_name(?int $tenantid): string {
         global $DB;
 
-        if ($tenantid === null) {
+        if ($tenantid === null || !self::is_mutenancy_available()) {
             return '';
         }
 
@@ -92,10 +111,16 @@ class tenant_helper {
     /**
      * Get all tenants as id => name array.
      *
+     * Returns empty array when MuTMS is not installed.
+     *
      * @return array
      */
     public static function get_all_tenants(): array {
         global $DB;
+
+        if (!self::is_mutenancy_available()) {
+            return [];
+        }
 
         $tenants = $DB->get_records('tool_mutenancy_tenant', null, 'name ASC', 'id, name');
         $result = [];
@@ -107,6 +132,8 @@ class tenant_helper {
 
     /**
      * Check if the current user is a tenant manager (not a site admin).
+     *
+     * Always returns false when MuTMS is not installed.
      *
      * @return bool
      */
