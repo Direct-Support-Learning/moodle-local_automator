@@ -25,6 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['action_add'] = 'Add action';
+$string['automator:managerules'] = 'Manage automation rules';
+$string['automator:viewlogs'] = 'View automation logs';
 $string['action_delete'] = 'Delete action';
 $string['action_edit'] = 'Edit action';
 $string['action_sendnotification'] = 'Send notification';
