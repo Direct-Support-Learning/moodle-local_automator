@@ -92,7 +92,7 @@ class rule_edit extends \moodleform {
                 get_string('tenantscope', 'local_automator'),
                 $tenants
             );
-            $mform->addHelpButton('tenantscope', 'tenantscope', 'local_automator');
+            $mform->addHelpButton('tenantid', 'tenantscope', 'local_automator');
         } else {
             $mform->addElement('hidden', 'tenantid');
         }
