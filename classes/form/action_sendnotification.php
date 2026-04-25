@@ -29,6 +29,8 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
+use local_automator\tenant_helper;
+
 /**
  * Configuration form for the sendnotification action type.
  */
@@ -39,6 +41,7 @@ class action_sendnotification extends \moodleform {
      */
     public function definition(): void {
         $mform = $this->_form;
+        $istenantmanager = tenant_helper::is_tenant_manager();
 
         $mform->addElement('hidden', 'ruleid');
         $mform->setType('ruleid', PARAM_INT);
@@ -66,28 +69,35 @@ class action_sendnotification extends \moodleform {
         );
         $mform->setType('body', PARAM_TEXT);
 
+        // Send From.
         $sendfromoptions = [
-            'admin'    => get_string('send_from_admin', 'local_automator'),
             'matched'  => get_string('send_from_matched', 'local_automator'),
             'specific' => get_string('send_from_specific', 'local_automator'),
         ];
+        if (!$istenantmanager) {
+            $sendfromoptions['admin'] = get_string('send_from_admin', 'local_automator');
+        }
+
         $mform->addElement(
             'select',
             'sendfrom',
             get_string('send_from', 'local_automator'),
             $sendfromoptions
         );
+        $mform->setDefault('sendfrom', 'matched');
 
         $mform->addElement(
-            'text',
+            'autocomplete',
             'sendfromid',
             get_string('specificuserid', 'local_automator'),
-            ['size' => 10]
+            [],
+            ['ajax' => 'core_user/form_user_selector', 'multiple' => false]
         );
         $mform->setType('sendfromid', PARAM_INT);
         $mform->hideIf('sendfromid', 'sendfrom', 'neq', 'specific');
 
-        $sendtooptions = $this->get_sendto_options();
+        // Send To.
+        $sendtooptions = $this->get_sendto_options($istenantmanager);
 
         $mform->addElement(
             'select',
@@ -95,12 +105,14 @@ class action_sendnotification extends \moodleform {
             get_string('send_to', 'local_automator'),
             $sendtooptions
         );
+        $mform->setDefault('sendto', $istenantmanager ? 'agencymanager' : 'matched');
 
         $mform->addElement(
-            'text',
+            'autocomplete',
             'sendtoid',
             get_string('specificuserid', 'local_automator'),
-            ['size' => 10]
+            [],
+            ['ajax' => 'core_user/form_user_selector', 'multiple' => false]
         );
         $mform->setType('sendtoid', PARAM_INT);
         $mform->hideIf('sendtoid', 'sendto', 'neq', 'specific');
@@ -114,35 +126,68 @@ class action_sendnotification extends \moodleform {
         $mform->setType('sendtoids', PARAM_TEXT);
         $mform->hideIf('sendtoids', 'sendto', 'neq', 'multiple');
 
+        // CC.
+        $ccbccoptions = ['' => get_string('none', 'moodle')] + $sendtooptions;
+
         $mform->addElement(
             'select',
             'cc',
             get_string('cc', 'local_automator'),
-            ['' => ''] + $sendtooptions
+            $ccbccoptions
         );
 
+        $mform->addElement(
+            'autocomplete',
+            'ccid',
+            get_string('specificuserid', 'local_automator'),
+            [],
+            ['ajax' => 'core_user/form_user_selector', 'multiple' => false]
+        );
+        $mform->setType('ccid', PARAM_INT);
+        $mform->hideIf('ccid', 'cc', 'neq', 'specific');
+
+        // BCC.
         $mform->addElement(
             'select',
             'bcc',
             get_string('bcc', 'local_automator'),
-            ['' => ''] + $sendtooptions
+            $ccbccoptions
         );
+
+        $mform->addElement(
+            'autocomplete',
+            'bccid',
+            get_string('specificuserid', 'local_automator'),
+            [],
+            ['ajax' => 'core_user/form_user_selector', 'multiple' => false]
+        );
+        $mform->setType('bccid', PARAM_INT);
+        $mform->hideIf('bccid', 'bcc', 'neq', 'specific');
 
         $this->add_action_buttons(true, get_string('savechanges'));
     }
 
     /**
-     * Build recipient dropdown options.
+     * Build the Send To / CC / BCC dropdown options.
      *
+     * Tenant managers do not see site admin options.
+     *
+     * @param bool $istenantmanager
      * @return array
      */
-    private function get_sendto_options(): array {
-        return [
-            'matched'   => get_string('send_to_matched', 'local_automator'),
-            'admin'     => get_string('send_to_admin', 'local_automator'),
-            'alladmins' => get_string('send_to_alladmins', 'local_automator'),
-            'specific'  => get_string('send_to_specific', 'local_automator'),
-            'multiple'  => get_string('send_to_multiple', 'local_automator'),
+    private function get_sendto_options(bool $istenantmanager): array {
+        $options = [
+            'matched'        => get_string('send_to_matched', 'local_automator'),
+            'agencymanager'  => get_string('send_to_agencymanager', 'local_automator'),
+            'specific'       => get_string('send_to_specific', 'local_automator'),
+            'multiple'       => get_string('send_to_multiple', 'local_automator'),
         ];
+
+        if (!$istenantmanager) {
+            $options['admin']     = get_string('send_to_admin', 'local_automator');
+            $options['alladmins'] = get_string('send_to_alladmins', 'local_automator');
+        }
+
+        return $options;
     }
 }

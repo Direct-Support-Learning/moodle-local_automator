@@ -51,7 +51,7 @@ class condition_cprcertification extends \moodleform {
 
         $operatoroptions = [
             'certified' => get_string('cprstatus_certified', 'local_automator'),
-            'expiring'  => get_string('cprstatus_expiring', 'local_automator', 30),
+            'expiring'  => get_string('cprstatus_expiring_option', 'local_automator'),
             'expired'   => get_string('cprstatus_expired', 'local_automator'),
             'nocert'    => get_string('cprstatus_nocert', 'local_automator'),
         ];
